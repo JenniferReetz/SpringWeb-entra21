@@ -20,6 +20,10 @@ public class ListaEntity {
 
     @Column(name = "data_conclusao")
     private LocalDateTime dataConclusao;
-
-    private String status;
+    // SALVAR COMO STRING NO BANCO (TO_DO, DONE, CANCELLED)
+    // é uma forma mais lenta mas legível
+    // SALVAR COMO ORDINAL (1, 2, 3)
+    // É mais rápido de fazer query, mas precisa saber qual é qual
+    @Enumerated(EnumType.STRING)
+    private ListaStatus status;
 }
