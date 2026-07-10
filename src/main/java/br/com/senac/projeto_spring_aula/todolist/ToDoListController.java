@@ -53,9 +53,10 @@ public class ToDoListController {
             return ResponseEntity.status(HttpStatus.OK).body(optionalListaEntity.get());
         }
     }
+    // PATCH ATUALIZA UM DADO, PUT TODOS OS DADOS
     // o patch atualiza de forma predefenida, tipo o put seria tipo um post,
     // este só faz um post interno, já predefenido
-    // então nao tem corpo na requisição
+    // então nao tem corpo na requisição NESTE CASO
     @PatchMapping("/{id}")
     @Transactional
     public ResponseEntity<ListaEntity> endTask(@PathVariable int id){
