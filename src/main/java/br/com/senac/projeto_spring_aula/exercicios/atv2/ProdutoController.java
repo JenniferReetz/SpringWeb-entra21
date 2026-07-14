@@ -47,9 +47,12 @@ public class ProdutoController {
             return ResponseEntity.status(200).body(optionalProdutoEntity.get());
         }
     }
-
     // Param é diferente de body que é diferente de path
     // Param é ?quantidade=X
+    // Criem PATCH /produtos/{id}/reabastecer?quantidade=X que soma X à quantidadeEstoque atual.
+    //    //Se o produto estava ESGOTADO e a nova quantidade for maior que zero, mudem o status para DISPONIVEL
+    //    //automaticamente.
+    //    //Devolvam 404 se o produto não existir.
     @PatchMapping("/{id}/reabastecer")
     @Transactional
     public ResponseEntity<ProdutoEntity> reabastecerProduto (@PathVariable int id, @RequestParam Integer quantidade){
@@ -71,8 +74,14 @@ public class ProdutoController {
         ProdutoEntity save = repository.save(produto);
         return ResponseEntity.ok(save);
     }
-    //Criem PATCH /produtos/{id}/reabastecer?quantidade=X que soma X à quantidadeEstoque atual.
-    //Se o produto estava ESGOTADO e a nova quantidade for maior que zero, mudem o status para DISPONIVEL
-    //automaticamente.
-    //Devolvam 404 se o produto não existir.
+    @DeleteMapping("/{id}")
+    @Transactional
+    public ResponseEntity<Void> deletarProduto(@PathVariable int id){
+        if (!repository.existsById(id)){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+        repository.deleteById(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
 }
