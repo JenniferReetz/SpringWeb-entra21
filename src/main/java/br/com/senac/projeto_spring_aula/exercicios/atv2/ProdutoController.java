@@ -1,11 +1,14 @@
 package br.com.senac.projeto_spring_aula.exercicios.atv2;
 import br.com.senac.projeto_spring_aula.todolist.model.ListaEntity;
+import br.com.senac.projeto_spring_aula.todolist.model.ListaStatus;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,6 +18,7 @@ import java.util.Optional;
 public class ProdutoController {
     private final ProdutoRepository repository;
     @PostMapping
+    @Transactional
     public ResponseEntity<ProdutoEntity> criarProduto (@Valid @RequestBody ProdutoPostDTO dto){
         ProdutoEntity produto = new ProdutoEntity();
 
@@ -43,10 +47,32 @@ public class ProdutoController {
             return ResponseEntity.status(200).body(optionalProdutoEntity.get());
         }
     }
-    //Criem PATCH /produtos/{id}/reabastecer?quantidade=X que soma X à quantidadeEstoque
-    //atual.
+
+    // Param é diferente de body que é diferente de path
+    // Param é ?quantidade=X
+    @PatchMapping("/{id}/reabastecer")
+    @Transactional
+    public ResponseEntity<ProdutoEntity> reabastecerProduto (@PathVariable int id, @RequestParam Integer quantidade){
+        // buscar
+        Optional<ProdutoEntity> optionalProduto = repository.findById(id);
+
+        // checar
+        if (optionalProduto.isEmpty()){return ResponseEntity.status(404).body(null);}
+        if (quantidade <= 0) {return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);}
+        ProdutoEntity produto = optionalProduto.get();
+
+        // alterar
+        produto.setQuantiddeEstoque(produto.getQuantiddeEstoque() + quantidade);
+        if (produto.getStatus().equals(ProdutoStatus.ESGOTADO)
+                && produto.getQuantiddeEstoque() > 0){
+            produto.setStatus(ProdutoStatus.DISPONIVEL);}
+
+        // devolver
+        ProdutoEntity save = repository.save(produto);
+        return ResponseEntity.ok(save);
+    }
+    //Criem PATCH /produtos/{id}/reabastecer?quantidade=X que soma X à quantidadeEstoque atual.
     //Se o produto estava ESGOTADO e a nova quantidade for maior que zero, mudem o status para DISPONIVEL
     //automaticamente.
     //Devolvam 404 se o produto não existir.
-
 }
