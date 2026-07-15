@@ -14,7 +14,7 @@ public record ProdutoPostDTO(
         @Positive(message = "O preço do produto não pode ser negativo!")
         BigDecimal preco,
         @NotNull(message = "A quantidade do produto não pode ser vazia!")
-        @PositiveOrZero(message = "A quantidade do produto não pode ser negativa ou zero!")
+        @PositiveOrZero(message = "A quantidade do produto não pode ser negativa!")
         Integer quantidade
 ) {
 }

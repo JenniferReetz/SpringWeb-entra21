@@ -1,6 +1,4 @@
 package br.com.senac.projeto_spring_aula.exercicios.atv2;
-import br.com.senac.projeto_spring_aula.todolist.model.ListaEntity;
-import br.com.senac.projeto_spring_aula.todolist.model.ListaStatus;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -8,7 +6,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,7 +21,7 @@ public class ProdutoController {
 
         produto.setNome(dto.nome());
         produto.setPreco(dto.preco());
-        produto.setQuantiddeEstoque(dto.quantidade());
+        produto.setQuantidadeEstoque(dto.quantidade());
 
         ProdutoEntity save = repository.save(produto);
         return ResponseEntity.status(201).body(save);
@@ -47,7 +44,7 @@ public class ProdutoController {
             return ResponseEntity.status(200).body(optionalProdutoEntity.get());
         }
     }
-    // Param é diferente de body que é diferente de path
+    // Param é diferente de body que é diferente de pathVariable
     // Param é ?quantidade=X
     // Criem PATCH /produtos/{id}/reabastecer?quantidade=X que soma X à quantidadeEstoque atual.
     //    //Se o produto estava ESGOTADO e a nova quantidade for maior que zero, mudem o status para DISPONIVEL
@@ -60,14 +57,16 @@ public class ProdutoController {
         Optional<ProdutoEntity> optionalProduto = repository.findById(id);
 
         // checar
-        if (optionalProduto.isEmpty()){return ResponseEntity.status(404).body(null);}
-        if (quantidade <= 0) {return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);}
+        if (optionalProduto.isEmpty()){
+            return ResponseEntity.status(404).body(null);}
         ProdutoEntity produto = optionalProduto.get();
-
+        if ((produto.getQuantidadeEstoque() + quantidade) < 0){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
         // alterar
-        produto.setQuantiddeEstoque(produto.getQuantiddeEstoque() + quantidade);
+        produto.setQuantidadeEstoque(produto.getQuantidadeEstoque() + quantidade);
         if (produto.getStatus().equals(ProdutoStatus.ESGOTADO)
-                && produto.getQuantiddeEstoque() > 0){
+                && produto.getQuantidadeEstoque() > 0){
             produto.setStatus(ProdutoStatus.DISPONIVEL);}
 
         // devolver

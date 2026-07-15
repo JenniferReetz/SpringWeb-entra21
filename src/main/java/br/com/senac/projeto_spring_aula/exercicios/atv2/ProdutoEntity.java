@@ -19,7 +19,7 @@ public class ProdutoEntity {
     @Column(nullable = false)
     private BigDecimal preco;
     @Column(name = "quantidade_estoque", nullable = false)
-    private Integer quantiddeEstoque;
+    private Integer quantidadeEstoque;
 
     @Enumerated(EnumType.STRING)
     private ProdutoStatus status;
