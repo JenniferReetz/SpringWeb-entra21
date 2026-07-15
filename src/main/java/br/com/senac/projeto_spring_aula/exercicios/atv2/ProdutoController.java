@@ -65,9 +65,11 @@ public class ProdutoController {
         }
         // alterar
         produto.setQuantidadeEstoque(produto.getQuantidadeEstoque() + quantidade);
-        if (produto.getStatus().equals(ProdutoStatus.ESGOTADO)
-                && produto.getQuantidadeEstoque() > 0){
-            produto.setStatus(ProdutoStatus.DISPONIVEL);}
+        if (produto.getStatus().equals(ProdutoStatus.ESGOTADO)){
+            produto.setStatus(ProdutoStatus.DISPONIVEL);
+        } else {
+            produto.setStatus(ProdutoStatus.ESGOTADO);
+        }
 
         // devolver
         ProdutoEntity save = repository.save(produto);
