@@ -32,6 +32,8 @@ public class ProdutoController {
     @GetMapping
     public ResponseEntity<List<ProdutoEntity>> listarProdutos(){
         return ResponseEntity.status(200).body(repository.findAll());
+        //ou
+        // return ResponseEntity.ok(repository.findAll());
     }
 
     @GetMapping("/{id}")
@@ -58,10 +60,10 @@ public class ProdutoController {
 
         // checar
         if (optionalProduto.isEmpty()){
-            return ResponseEntity.status(404).body(null);}
+            return ResponseEntity.status(404).build();}
         ProdutoEntity produto = optionalProduto.get();
         if ((produto.getQuantidadeEstoque() + quantidade) < 0){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         // alterar
         produto.setQuantidadeEstoque(produto.getQuantidadeEstoque() + quantidade);
